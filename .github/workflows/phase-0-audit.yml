@@ -1,0 +1,29 @@
+name: phase-0-audit
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - agent/phase-0-discovery-system
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Unit tests
+        run: python -m unittest discover -s prototypes/catalog-audit/tests -v
+      - name: Sample audit smoke test
+        run: |
+          python prototypes/catalog-audit/audit_catalog.py \
+            prototypes/catalog-audit/sample/shopify-products.csv \
+            --output-dir /tmp/shelfboost-audit
+          test -s /tmp/shelfboost-audit/catalog-audit.csv
+          test -s /tmp/shelfboost-audit/catalog-summary.json
