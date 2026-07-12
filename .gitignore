@@ -5,3 +5,11 @@ node_modules/
 dist/
 .wrangler/
 .DS_Store
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+.audit-output/
+merchant-data/
+private-research/

@@ -1,42 +1,78 @@
 # Shelfboost
 
-> connect Shopify and bulk-generate SEO product titles, descriptions, and meta tags in your brand voice, with one-click publish back.
+> Audit a Shopify catalog, find the listings most likely to need attention, and prepare fact-safe, brand-aligned improvements for human review.
 
-**Alternative to the product-shape pioneered by Hypotenuse AI (YC S20)** — rank #16 of 500 in the [YC-500 Fable 5 Venture Blueprint](https://github.com/) (score 7.1/10).
+Shelfboost began as a blueprint for bulk AI product copy. Phase 0 deliberately narrows the first move: validate the pain, buyer, trust requirements, pricing, and workflow before building Shopify OAuth, autonomous publishing, billing, or a full SaaS dashboard.
 
-## Why this exists
-Sellers have thousands of thin product pages; bulk SEO copy lifts organic traffic. The buildable wedge: just bulk product-copy and meta generation for one platform (shopify).
+## Current status
 
-## MVP scope
-- [ ] Shopify OAuth
-- [ ] brand-voice profile
-- [ ] bulk copy generation
-- [ ] SEO meta/keywords
-- [ ] one-click publish
+| Phase | Status | Purpose |
+|---|---|---|
+| Phase 0 | **Implemented as a discovery system** | Prove the ICP, catalog pain, quality bar, trust boundary, recurring use, and willingness to pay |
+| Phase 1 | Not started | Concierge audit and controlled draft-generation workflow |
+| Phase 2+ | Not started | Shopify read-only integration, review, safe publishing, measurement, and moat |
 
-## Architecture
-`Workers+Supabase+Claude; Shopify app` — Cloudflare Workers + Hono API, Supabase (Postgres + RLS + Auth + pgvector), Claude API via Agent SDK (claude-fable-5 for agent reasoning, claude-haiku-4-5 for volume), wrangler deploys.
+## Phase 0 operating principle
 
-**Integrations:** Shopify Admin API; Claude; Stripe
-**Data:** Product catalog, brand voice profile, generated copy
-**Agent core:** Agent writes per-product copy tuned to keywords and brand tone.
+Do not ask whether merchants like the idea. Ask whether they will provide a real catalog, review the output, request another batch, and pay to continue.
 
-## Business
-| | |
-|---|---|
-| Monetization | SaaS $29-199/mo by catalog size |
-| First customer | Shopify SMB sellers with large catalogs |
-| GTM wedge | Shopify App Store listing plus 'ecommerce SEO' content; no paid ads. |
-| Competition risk | High: many AI copy tools |
-| Regulatory/trust risk | Low: marketing copy only |
-| India angle | Cheap tier for Indian D2C brands and marketplace sellers. |
-| Difficulty / build time | Low / 2-3 weeks |
+Phase 0 includes:
 
-## 30-day plan
-- **W1:** core loop — Shopify OAuth + brand-voice profile
-- **W2:** bulk copy generation + SEO meta/keywords + one-click publish + auth + billing
-- **W3:** polish, instrument events, seed first users via: Shopify App Store listing plus 'ecommerce SEO' content; no paid ads.
-- **W4:** launch + first revenue; kill/scale decision
+- binding hypotheses and kill criteria;
+- an ICP scorecard for merchants and agencies;
+- interview, audit, pilot, pricing, and decision templates;
+- CSV evidence trackers;
+- a deterministic, read-only Shopify CSV catalog-audit prototype;
+- tests and CI for the prototype;
+- explicit data-handling and trust rules.
 
----
-*Built with Fable 5 (Claude Code). Blueprint row: inspired by Hypotenuse AI — "AI content platform generating product descriptions and copy for ecommerce brands."*
+## Run the catalog-audit prototype
+
+The prototype uses only Python's standard library and never writes to Shopify.
+
+```bash
+python3 prototypes/catalog-audit/audit_catalog.py \
+  prototypes/catalog-audit/sample/shopify-products.csv \
+  --output-dir /tmp/shelfboost-audit
+```
+
+Outputs:
+
+- `catalog-audit.csv` — product-level score, flags, and evidence;
+- `catalog-summary.json` — aggregate findings and severity counts.
+
+Run validation:
+
+```bash
+python3 -m unittest discover -s prototypes/catalog-audit/tests -v
+python3 prototypes/catalog-audit/audit_catalog.py \
+  prototypes/catalog-audit/sample/shopify-products.csv \
+  --output-dir /tmp/shelfboost-audit-smoke
+```
+
+## Phase 0 documents
+
+Start with [`docs/phase-0/00-phase-0-charter.md`](docs/phase-0/00-phase-0-charter.md), then use the interview, audit, pilot, and decision templates in order.
+
+## Initial market thesis
+
+The first two candidate segments are:
+
+1. Shopify fashion, accessories, home-decor, and lifestyle brands with roughly 200–2,000 active products, frequent product launches, and a small content team.
+2. Shopify or ecommerce SEO agencies managing at least five stores and repeating catalog-content work across clients.
+
+The initial wedge is **read-only catalog diagnosis plus controlled draft preparation**, not mass autonomous publishing.
+
+## Explicit non-goals for Phase 0
+
+- Shopify OAuth or Admin API writes
+- live-store publishing
+- autonomous claims generation
+- production auth, billing, or multi-tenant infrastructure
+- a polished customer dashboard
+- storing merchant CSVs in this public repository
+- claiming SEO or revenue uplift without measured evidence
+
+## Original blueprint
+
+The longer-term product shape remains a Shopify application using Cloudflare Workers, Hono, Supabase, an AI generation layer, Shopify Admin API, and Stripe. That architecture is intentionally deferred until Phase 0 evidence earns it.
