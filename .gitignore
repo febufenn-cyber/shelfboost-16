@@ -13,3 +13,10 @@ htmlcov/
 .audit-output/
 merchant-data/
 private-research/
+private-data/
+phase1-workspaces/
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3

@@ -1,0 +1,7 @@
+{
+  "category": "general",
+  "required_facts": [],
+  "recommended_facts": ["material", "dimensions", "use_case", "care"],
+  "prohibited_inferences": ["certification", "origin", "safety", "warranty", "health benefit"],
+  "max_facts": 6
+}

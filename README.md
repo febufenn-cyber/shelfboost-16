@@ -1,78 +1,94 @@
 # Shelfboost
 
-> Audit a Shopify catalog, find the listings most likely to need attention, and prepare fact-safe, brand-aligned improvements for human review.
+> Find weak Shopify listings, prepare fact-traceable improvements, and export only the fields a human explicitly approves.
 
-Shelfboost began as a blueprint for bulk AI product copy. Phase 0 deliberately narrows the first move: validate the pain, buyer, trust requirements, pricing, and workflow before building Shopify OAuth, autonomous publishing, billing, or a full SaaS dashboard.
+Shelfboost is being built in evidence-gated phases. The repository now contains both the Phase 0 discovery system and a working Phase 1 local concierge-pilot system. It is not yet a production Shopify application.
 
 ## Current status
 
 | Phase | Status | Purpose |
 |---|---|---|
-| Phase 0 | **Implemented as a discovery system** | Prove the ICP, catalog pain, quality bar, trust boundary, recurring use, and willingness to pay |
-| Phase 1 | Not started | Concierge audit and controlled draft-generation workflow |
-| Phase 2+ | Not started | Shopify read-only integration, review, safe publishing, measurement, and moat |
+| Phase 0 | Implemented foundation; real evidence still required | Prove buyer pain, trust requirements, recurring use, and willingness to pay |
+| Phase 1 | **Implemented as a local pilot system** | Prove repeatable intake, fact governance, drafting, validation, review, approved-only export, and paid continuation |
+| Phase 2+ | Not started | Shopify read-only integration, merchant-facing product, safe publishing, measurement, and moat |
 
-## Phase 0 operating principle
+## Phase 1 workflow
 
-Do not ask whether merchants like the idea. Ask whether they will provide a real catalog, review the output, request another batch, and pay to continue.
-
-Phase 0 includes:
-
-- binding hypotheses and kill criteria;
-- an ICP scorecard for merchants and agencies;
-- interview, audit, pilot, pricing, and decision templates;
-- CSV evidence trackers;
-- a deterministic, read-only Shopify CSV catalog-audit prototype;
-- tests and CI for the prototype;
-- explicit data-handling and trust rules.
-
-## Run the catalog-audit prototype
-
-The prototype uses only Python's standard library and never writes to Shopify.
-
-```bash
-python3 prototypes/catalog-audit/audit_catalog.py \
-  prototypes/catalog-audit/sample/shopify-products.csv \
-  --output-dir /tmp/shelfboost-audit
+```text
+Shopify CSV
+→ product and variant normalization
+→ approved fact ledger
+→ audit and priority batch
+→ versioned brand profile
+→ controlled drafts
+→ validation and duplicate blocking
+→ HTML review pack and field decisions
+→ approved-only Shopify CSV export
+→ JSON change log
 ```
 
-Outputs:
+### What is implemented
 
-- `catalog-audit.csv` — product-level score, flags, and evidence;
-- `catalog-summary.json` — aggregate findings and severity counts.
+- private SQLite pilot workspace;
+- source-file hashing and complete original-row preservation;
+- Shopify variant grouping by handle;
+- facts admitted only from structured fields and explicit merchant fact columns;
+- priority and eligibility separation;
+- versioned brand profile JSON;
+- conservative deterministic provider for safe workflow testing;
+- prohibited-language, claim-language, HTML, length, required-fact, reviewer-edit, and duplicate validation;
+- field-level approve/edit/reject/defer decisions;
+- blocked drafts cannot be approved;
+- approved-only export that preserves untouched fields and variant rows;
+- tests, synthetic demo, documentation, and CI.
 
-Run validation:
+## Run the Phase 1 synthetic demo
 
 ```bash
-python3 -m unittest discover -s prototypes/catalog-audit/tests -v
-python3 prototypes/catalog-audit/audit_catalog.py \
-  prototypes/catalog-audit/sample/shopify-products.csv \
-  --output-dir /tmp/shelfboost-audit-smoke
+./phase1/run-demo.sh
 ```
 
-## Phase 0 documents
+Or run each step manually:
 
-Start with [`docs/phase-0/00-phase-0-charter.md`](docs/phase-0/00-phase-0-charter.md), then use the interview, audit, pilot, and decision templates in order.
+```bash
+export WORKSPACE=/tmp/shelfboost-pilot
+PYTHONPATH=phase1 python3 -m shelfboost_phase1 --workspace "$WORKSPACE" init
+PYTHONPATH=phase1 python3 -m shelfboost_phase1 --workspace "$WORKSPACE" import-catalog phase1/sample/shopify-products.csv
+PYTHONPATH=phase1 python3 -m shelfboost_phase1 --workspace "$WORKSPACE" brand phase1/sample/brand-profile.json
+PYTHONPATH=phase1 python3 -m shelfboost_phase1 --workspace "$WORKSPACE" select-batch --name "Synthetic pilot" --limit 4
+PYTHONPATH=phase1 python3 -m shelfboost_phase1 --workspace "$WORKSPACE" generate
+PYTHONPATH=phase1 python3 -m shelfboost_phase1 --workspace "$WORKSPACE" review-pack
+PYTHONPATH=phase1 python3 -m shelfboost_phase1 --workspace "$WORKSPACE" status
+```
 
-## Initial market thesis
+The demo does not auto-approve or export anything. To complete a real pilot, review the generated decision CSV, import explicit decisions, and run the approved-only export flow in the [Phase 1 pilot runbook](docs/phase-1/README.md#6-pilot-runbook).
 
-The first two candidate segments are:
+## Validation
 
-1. Shopify fashion, accessories, home-decor, and lifestyle brands with roughly 200–2,000 active products, frequent product launches, and a small content team.
-2. Shopify or ecommerce SEO agencies managing at least five stores and repeating catalog-content work across clients.
+```bash
+make test
+make phase1-demo
+```
 
-The initial wedge is **read-only catalog diagnosis plus controlled draft preparation**, not mass autonomous publishing.
+## Trust boundary
 
-## Explicit non-goals for Phase 0
+Phase 1 remains CSV-based and export-only:
 
-- Shopify OAuth or Admin API writes
-- live-store publishing
-- autonomous claims generation
-- production auth, billing, or multi-tenant infrastructure
-- a polished customer dashboard
-- storing merchant CSVs in this public repository
-- claiming SEO or revenue uplift without measured evidence
+- no Shopify OAuth;
+- no live-store writes;
+- no autonomous approval;
+- no invented missing facts;
+- no ranking, traffic, conversion, or revenue guarantees;
+- no real merchant data in this public repository.
 
-## Original blueprint
+The included draft provider is deliberately conservative. A later AI provider must preserve the same fact-source, validation, review, and export contracts.
 
-The longer-term product shape remains a Shopify application using Cloudflare Workers, Hono, Supabase, an AI generation layer, Shopify Admin API, and Stripe. That architecture is intentionally deferred until Phase 0 evidence earns it.
+## Documentation
+
+- [`docs/phase-0/00-phase-0-charter.md`](docs/phase-0/00-phase-0-charter.md)
+- [`docs/phase-1/README.md`](docs/phase-1/README.md)
+- [`phase1/README.md`](phase1/README.md)
+
+## Long-term direction
+
+The intended mature product is a Shopify catalog-optimization system with read-only audit, controlled generation, approval, reversible publishing, and measured outcomes. Cloudflare Workers, Hono, Supabase, Shopify Admin API, AI model adapters, and Stripe remain candidate production components—not commitments that override evidence.

@@ -1,0 +1,13 @@
+{
+  "brand_name": "North Studio",
+  "audience": ["design-conscious shoppers", "customers who value clear product details"],
+  "tone": ["warm", "specific", "understated"],
+  "prohibited_terms": ["perfect", "must-have", "best", "guaranteed"],
+  "regional_language": "en-IN",
+  "opening_pattern": "Verified details for {title} are presented below.",
+  "claims_policy": {
+    "health": "prohibited",
+    "sustainability": "requires merchant-approved evidence",
+    "certification": "requires merchant-approved evidence"
+  }
+}
