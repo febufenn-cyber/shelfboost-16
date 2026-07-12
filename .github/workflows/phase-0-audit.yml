@@ -1,4 +1,4 @@
-name: phase-0-audit
+name: phase-0-and-1
 
 on:
   pull_request:
@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - agent/phase-0-discovery-system
+      - agent/phase-1-concierge-pilot
 
 permissions:
   contents: read
@@ -18,12 +19,20 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Unit tests
+      - name: Phase 0 unit tests
         run: python -m unittest discover -s prototypes/catalog-audit/tests -v
-      - name: Sample audit smoke test
+      - name: Phase 0 sample audit smoke test
         run: |
           python prototypes/catalog-audit/audit_catalog.py \
             prototypes/catalog-audit/sample/shopify-products.csv \
             --output-dir /tmp/shelfboost-audit
           test -s /tmp/shelfboost-audit/catalog-audit.csv
           test -s /tmp/shelfboost-audit/catalog-summary.json
+      - name: Phase 1 unit tests
+        run: PYTHONPATH=phase1 python -m unittest discover -s phase1/tests -v
+      - name: Phase 1 synthetic pilot smoke test
+        run: |
+          ./phase1/run-demo.sh /tmp/shelfboost-phase1-demo
+          test -s /tmp/shelfboost-phase1-demo/pilot.db
+          test -s /tmp/shelfboost-phase1-demo/artifacts/batch-1-review/review.html
+          test -s /tmp/shelfboost-phase1-demo/artifacts/batch-1-review/review-decisions.csv

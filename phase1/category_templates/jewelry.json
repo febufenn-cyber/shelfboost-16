@@ -1,0 +1,7 @@
+{
+  "category": "jewelry",
+  "required_facts": ["material"],
+  "recommended_facts": ["stone", "plating", "dimensions", "closure", "care"],
+  "prohibited_inferences": ["metal purity", "gem authenticity", "hypoallergenic", "origin"],
+  "max_facts": 6
+}

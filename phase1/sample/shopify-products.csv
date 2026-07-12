@@ -1,0 +1,7 @@
+Handle,Title,Body (HTML),Vendor,Type,Tags,Status,SEO Title,SEO Description,Image Alt Text,Variant SKU,Option1 Name,Option1 Value,Fact: Material,Fact: Fit,Fact: Closure,Fact: Use Case,Fact: Dimensions,Fact: Finish
+linen-shirt,Linen Summer Shirt,"<p>Premium quality must-have shirt for everyone.</p>",North Studio,Shirts,"linen,summer",active,,,,LS-S,Size,S,Linen,Relaxed,Shell buttons,Warm-weather layering,,
+linen-shirt,,,,,,,,,,LS-M,Size,M,,,,,,
+brass-lamp,Brass Table Lamp,"<p>A small lamp.</p>",North Studio,Lamps,"lighting,decor",active,,,,BL-01,,,Brass,,,,30 cm height,Brushed brass
+brass-lamp-copy,Brass Table Lamp,"<p>A small lamp.</p>",North Studio,Lamps,"lighting,decor",active,,,,BL-02,,,Brass,,,,25 cm height,Antique brass
+claim-product,Wellness Stone,"<p>This clinically proven stone guarantees results and is 100% safe.</p>",Example Vendor,Decor,wellness,active,Wellness Stone,Decorative stone for your home.,Decorative stone on shelf,WS-01,,,,,,,,
+missing-product,,,,,,,,,,MP-01,,,,,,,,

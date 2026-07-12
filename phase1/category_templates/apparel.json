@@ -1,0 +1,7 @@
+{
+  "category": "apparel",
+  "required_facts": ["material"],
+  "recommended_facts": ["fit", "closure", "care", "occasion", "construction"],
+  "prohibited_inferences": ["fabric composition", "sustainability", "universal fit", "care instructions"],
+  "max_facts": 6
+}

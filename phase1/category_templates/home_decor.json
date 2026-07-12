@@ -1,0 +1,7 @@
+{
+  "category": "home_decor",
+  "required_facts": ["material"],
+  "recommended_facts": ["dimensions", "finish", "assembly", "care", "included_items"],
+  "prohibited_inferences": ["material", "dimensions", "origin", "certification", "safety"],
+  "max_facts": 6
+}
