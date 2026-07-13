@@ -1,4 +1,4 @@
-name: phase-0-1-2
+name: phase-0-1-2-3
 
 on:
   pull_request:
@@ -10,6 +10,9 @@ on:
       - agent/phase-2a-shopify-sync
       - agent/phase-2b-webhook-reconciliation
       - agent/phase-2c-phase1-bridge
+      - agent/phase-3a-publish-planning
+      - agent/phase-3b-safe-execution
+      - agent/phase-3c-rollback-audit
 
 permissions:
   contents: read
@@ -48,3 +51,5 @@ jobs:
           test "$(find /tmp/shelfboost-phase2-demo/snapshots -name '*.json' | wc -l)" -eq 3
           test -s /tmp/shelfboost-phase2-demo/exports/phase1-catalog.csv
           test -s /tmp/shelfboost-phase2-demo/exports/phase1-catalog.manifest.json
+      - name: Phase 3 unit tests
+        run: PYTHONWARNINGS=error::ResourceWarning PYTHONPATH=phase1:phase2:phase3 python -m unittest discover -s phase3/tests -v
