@@ -1,22 +1,29 @@
 # Phase 3 — Reversible selected-field publishing
 
-## Goal
+## Implemented
 
-Publish only human-approved product description and SEO fields with live precondition checks, immutable snapshots, idempotent reconciliation, partial-failure recovery, and rollback.
+### 3A: planning
 
-## Increments
+- Phase 1 approval, approved CSV, Phase 2 mirror, and bridge provenance must agree;
+- any stale product blocks the batch;
+- immutable planned-before snapshots and deterministic plan keys are recorded.
 
-1. **3A — planning:** validate Phase 1 evidence against the current Phase 2 mirror and create immutable before snapshots.
-2. **3B — execution:** read live state before each mutation, distinguish unchanged, already applied, and external conflict, execute `productUpdate` once, and verify the result.
-3. **3C — rollback:** restore only products still matching the value Shelfboost published, verify restoration, and emit an audit report.
+### 3B: execution
 
-## Blind spots addressed
+- a live product read precedes every write;
+- unchanged, already-applied, and externally modified states are distinguished;
+- `productUpdate` receives only the selected description or SEO fields;
+- mutations are sent once, never blindly retried;
+- ambiguous outcomes become `uncertain` and are reconciled by a later live read;
+- Shopify `userErrors`, raw requests, responses, hashes, and snapshots are retained;
+- verified successes update the local mirror;
+- partial batches remain item-addressable.
 
-- approval may become stale before publication;
-- a merchant or another app may modify the same field;
-- a mutation response can fail after the server has applied a change;
-- blindly repeating a write can overwrite later work;
-- a partially successful batch needs item-level recovery;
-- rollback is unsafe after an unrelated subsequent edit.
+## Still prohibited
 
-Phase 3 does not add autonomous approval, variant writes, prices, tags, statuses, media, or unrestricted product mutation.
+- autonomous approval;
+- variants, prices, inventory, tags, product status, media, or metafield writes;
+- force-overwriting an external edit;
+- rollback without a live precondition check.
+
+Phase 3C adds rollback and a final audit bundle.
