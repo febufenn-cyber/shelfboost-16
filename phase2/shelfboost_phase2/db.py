@@ -139,6 +139,18 @@ CREATE TABLE IF NOT EXISTS refresh_queue (
 
 CREATE INDEX IF NOT EXISTS idx_refresh_queue_pending
 ON refresh_queue(shop_id, status, id);
+
+CREATE TABLE IF NOT EXISTS bridge_exports (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    shop_id INTEGER NOT NULL REFERENCES shops(id) ON DELETE CASCADE,
+    sync_run_id INTEGER NOT NULL REFERENCES sync_runs(id),
+    output_name TEXT NOT NULL,
+    csv_sha256 TEXT NOT NULL,
+    product_count INTEGER NOT NULL,
+    row_count INTEGER NOT NULL,
+    manifest_json TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
 """
 
 

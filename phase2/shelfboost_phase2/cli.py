@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 
+from .bridge import export_phase1_catalog
 from .db import initialize
 from .fixture import FixtureTransport
 from .shopify import DEFAULT_API_VERSION, ShopifyGraphQLClient
@@ -49,6 +50,10 @@ def build_parser() -> argparse.ArgumentParser:
     refresh.add_argument("--limit", type=int, default=25)
 
     sub.add_parser("webhook-status")
+
+    bridge = sub.add_parser("export-phase1")
+    bridge.add_argument("--shop", required=True)
+    bridge.add_argument("--output", type=Path, required=True)
     return parser
 
 
@@ -62,6 +67,10 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.command == "webhook-status":
         print(json.dumps(webhook_status(args.workspace), indent=2, ensure_ascii=False))
+        return 0
+    if args.command == "export-phase1":
+        result = export_phase1_catalog(args.workspace, args.shop, args.output)
+        print(json.dumps(result, indent=2, ensure_ascii=False))
         return 0
     if args.command == "ingest-webhook":
         secret = os.environ.get(args.secret_env, "")

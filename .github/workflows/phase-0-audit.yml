@@ -40,9 +40,11 @@ jobs:
           test -s /tmp/shelfboost-phase1-demo/artifacts/batch-1-review/review.html
           test -s /tmp/shelfboost-phase1-demo/artifacts/batch-1-review/review-decisions.csv
       - name: Phase 2 unit tests
-        run: PYTHONWARNINGS=error::ResourceWarning PYTHONPATH=phase2 python -m unittest discover -s phase2/tests -v
+        run: PYTHONWARNINGS=error::ResourceWarning PYTHONPATH=phase1:phase2 python -m unittest discover -s phase2/tests -v
       - name: Phase 2 read-only sync smoke test
         run: |
           ./phase2/run-demo.sh /tmp/shelfboost-phase2-demo
           test -s /tmp/shelfboost-phase2-demo/sync.db
           test "$(find /tmp/shelfboost-phase2-demo/snapshots -name '*.json' | wc -l)" -eq 3
+          test -s /tmp/shelfboost-phase2-demo/exports/phase1-catalog.csv
+          test -s /tmp/shelfboost-phase2-demo/exports/phase1-catalog.manifest.json

@@ -15,7 +15,7 @@ phase1-demo:
 	./phase1/run-demo.sh /tmp/shelfboost-phase1-demo
 
 phase2-test:
-	PYTHONPATH=phase2 python3 -m unittest discover -s phase2/tests -v
+	PYTHONPATH=phase1:phase2 python3 -m unittest discover -s phase2/tests -v
 
 phase2-demo:
 	./phase2/run-demo.sh /tmp/shelfboost-phase2-demo
