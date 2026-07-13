@@ -15,6 +15,7 @@ merchant-data/
 private-research/
 private-data/
 phase1-workspaces/
+phase2-workspaces/
 *.db
 *.db-shm
 *.db-wal

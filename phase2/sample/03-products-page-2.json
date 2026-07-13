@@ -1,0 +1,37 @@
+{
+  "status": 200,
+  "headers": {"X-Shopify-API-Version": "2026-07"},
+  "payload": {
+    "data": {
+      "products": {
+        "nodes": [
+          {
+            "id": "gid://shopify/Product/102",
+            "legacyResourceId": "102",
+            "handle": "brass-lamp",
+            "title": "Brass Lamp",
+            "descriptionHtml": "<p>A compact table lamp.</p>",
+            "vendor": "House Form",
+            "productType": "Lamps",
+            "status": "ACTIVE",
+            "tags": ["lighting"],
+            "createdAt": "2026-01-02T00:00:00Z",
+            "updatedAt": "2026-07-11T10:00:00Z",
+            "seo": {"title": "Brass Lamp", "description": "A compact brass table lamp."},
+            "metafields": {
+              "nodes": [{"namespace": "facts", "key": "material", "type": "single_line_text_field", "value": "Brass"}],
+              "pageInfo": {"hasNextPage": false}
+            },
+            "variants": {
+              "nodes": [
+                {"id": "gid://shopify/ProductVariant/2001", "legacyResourceId": "2001", "title": "Default Title", "sku": "BL-01", "barcode": "", "price": "79.00", "selectedOptions": [{"name": "Title", "value": "Default Title"}]}
+              ],
+              "pageInfo": {"hasNextPage": false, "endCursor": "variant-cursor-3"}
+            }
+          }
+        ],
+        "pageInfo": {"hasNextPage": false, "endCursor": "product-cursor-2"}
+      }
+    }
+  }
+}
