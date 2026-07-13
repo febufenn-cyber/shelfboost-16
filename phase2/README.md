@@ -1,19 +1,31 @@
-# Shelfboost Phase 2A — Read-only Shopify sync
+# Shelfboost Phase 2 — Read-only Shopify sync and reconciliation
 
-Phase 2A replaces repeated CSV exports with a read-only, version-pinned Shopify Admin GraphQL synchronization layer.
+Phase 2 replaces repeated CSV exports with a read-only, version-pinned Shopify Admin GraphQL synchronization layer and authenticated webhook reconciliation.
 
-## Safety boundary
+## Phase 2A — Catalog synchronization
 
-- requests only catalog data;
-- stores no access token in SQLite—only the environment-variable reference;
-- never calls a Shopify mutation;
-- rejects API-version fall-forward instead of silently accepting a different schema;
-- records immutable raw response snapshots with SHA-256 digests;
-- distinguishes full reconciliation from incremental refresh;
-- never treats an incremental sync as proof that an unseen product was deleted;
-- fails closed when the configured `facts` metafield connection is truncated.
+- Shopify Admin GraphQL API pinned to `2026-07`;
+- cursor-based product pagination;
+- separate completion of truncated variant connections;
+- bounded retry for rate limits and server failures;
+- API-version fall-forward rejection;
+- immutable response snapshots with SHA-256 digests;
+- full-sync deletion reconciliation;
+- incremental syncs that never infer deletion from absence.
 
-## Live sync
+## Phase 2B — Webhook security and refresh
+
+- verifies `X-Shopify-Hmac-SHA256` against the exact raw request body before parsing JSON;
+- validates the `*.myshopify.com` shop domain and requires a registered shop;
+- deduplicates deliveries with `X-Shopify-Webhook-Id`;
+- correlates merchant actions with `X-Shopify-Event-Id`;
+- queues `products/create` and `products/update` for read-only product refresh;
+- soft-deletes products on `products/delete`;
+- disables the shop and clears queued work on `app/uninstalled`;
+- coalesces multiple pending deliveries for the same product into one API refresh;
+- stores only the token environment-variable reference, never the token value.
+
+## Live full sync
 
 ```bash
 export SHOPIFY_ACCESS_TOKEN='...'
@@ -22,7 +34,7 @@ PYTHONPATH=phase2 python3 -m shelfboost_phase2 \
   sync --shop store-a.myshopify.com --mode full
 ```
 
-Incremental syncs require an explicit timestamp:
+## Incremental sync
 
 ```bash
 PYTHONPATH=phase2 python3 -m shelfboost_phase2 \
@@ -31,18 +43,39 @@ PYTHONPATH=phase2 python3 -m shelfboost_phase2 \
   --mode incremental --since 2026-07-01T00:00:00Z
 ```
 
-## Synthetic demo
+## Webhook ingestion
+
+Capture the **raw request body** before any JSON middleware changes it, save the request headers as JSON, and then run:
+
+```bash
+export SHOPIFY_CLIENT_SECRET='...'
+PYTHONPATH=phase2 python3 -m shelfboost_phase2 \
+  --workspace /private/shelfboost/store-a \
+  ingest-webhook --headers-json headers.json --body raw-body.json
+```
+
+Refresh verified product events:
+
+```bash
+PYTHONPATH=phase2 python3 -m shelfboost_phase2 \
+  --workspace /private/shelfboost/store-a \
+  refresh-queue --shop store-a.myshopify.com
+```
+
+This CLI is a secure processing core, not an HTTPS server. A deployment layer must pass the untouched raw body and headers into it.
+
+## Synthetic demo and tests
 
 ```bash
 ./phase2/run-demo.sh /tmp/shelfboost-phase2-demo
+PYTHONWARNINGS=error::ResourceWarning PYTHONPATH=phase2 \
+  python3 -m unittest discover -s phase2/tests -v
 ```
-
-The fixture demo exercises product pagination, nested variant pagination, immutable snapshots, and reconciliation without network access or credentials.
 
 ## Scope intentionally deferred
 
 - OAuth callback server and encrypted token vault;
-- webhooks and deduplication;
-- app-uninstall handling;
+- deployed HTTPS webhook endpoint;
 - Phase 1 fact-ledger bridge;
+- merchant UI;
 - direct Shopify writes.

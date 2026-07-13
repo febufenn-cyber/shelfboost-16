@@ -49,6 +49,41 @@ query ShelfboostProducts($first: Int!, $after: String, $query: String) {
 }
 """
 
+PRODUCT_QUERY = """
+query ShelfboostProduct($id: ID!) {
+  product(id: $id) {
+    id
+    legacyResourceId
+    handle
+    title
+    descriptionHtml
+    vendor
+    productType
+    status
+    tags
+    createdAt
+    updatedAt
+    seo { title description }
+    metafields(first: 50, namespace: "facts") {
+      nodes { namespace key type value }
+      pageInfo { hasNextPage }
+    }
+    variants(first: 100) {
+      nodes {
+        id
+        legacyResourceId
+        title
+        sku
+        barcode
+        price
+        selectedOptions { name value }
+      }
+      pageInfo { hasNextPage endCursor }
+    }
+  }
+}
+"""
+
 VARIANTS_QUERY = """
 query ShelfboostVariants($id: ID!, $first: Int!, $after: String) {
   product(id: $id) {
@@ -216,6 +251,9 @@ class ShopifyGraphQLClient:
             after = page_info["endCursor"]
             if not after:
                 raise ShopifyError("Products page indicated hasNextPage without endCursor")
+
+    def fetch_product(self, product_gid: str) -> GraphQLResult:
+        return self.execute(PRODUCT_QUERY, {"id": product_gid})
 
     def fetch_remaining_variants(self, product_gid: str, after: str, *, page_size: int = 100):
         page_number = 0

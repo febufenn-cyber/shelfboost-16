@@ -21,6 +21,8 @@ CREATE TABLE IF NOT EXISTS shops (
     domain TEXT NOT NULL UNIQUE,
     api_version TEXT NOT NULL,
     token_reference TEXT NOT NULL DEFAULT '',
+    active INTEGER NOT NULL DEFAULT 1,
+    uninstalled_at TEXT,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -106,6 +108,37 @@ ON shopify_products(shop_id, last_seen_run_id);
 
 CREATE INDEX IF NOT EXISTS idx_variants_product
 ON shopify_variants(product_id);
+
+CREATE TABLE IF NOT EXISTS webhook_deliveries (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    shop_id INTEGER NOT NULL REFERENCES shops(id) ON DELETE CASCADE,
+    webhook_id TEXT NOT NULL UNIQUE,
+    event_id TEXT NOT NULL DEFAULT '',
+    topic TEXT NOT NULL,
+    api_version TEXT NOT NULL DEFAULT '',
+    status TEXT NOT NULL CHECK(status IN ('received', 'processed', 'ignored', 'duplicate', 'failed')),
+    payload_sha256 TEXT NOT NULL,
+    payload_json TEXT NOT NULL,
+    received_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    processed_at TEXT,
+    error_text TEXT NOT NULL DEFAULT ''
+);
+
+CREATE TABLE IF NOT EXISTS refresh_queue (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    shop_id INTEGER NOT NULL REFERENCES shops(id) ON DELETE CASCADE,
+    product_gid TEXT NOT NULL,
+    reason TEXT NOT NULL,
+    source_webhook_id TEXT NOT NULL,
+    status TEXT NOT NULL CHECK(status IN ('pending', 'processing', 'processed', 'ignored', 'failed')),
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    processed_at TEXT,
+    error_text TEXT NOT NULL DEFAULT '',
+    UNIQUE(shop_id, product_gid, source_webhook_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_refresh_queue_pending
+ON refresh_queue(shop_id, status, id);
 """
 
 
@@ -117,6 +150,11 @@ def initialize(workspace: Path) -> Path:
     db_path = workspace / "sync.db"
     with sqlite3.connect(db_path, factory=ClosingConnection) as connection:
         connection.executescript(SCHEMA)
+        columns = {row[1] for row in connection.execute("PRAGMA table_info(shops)")}
+        if "active" not in columns:
+            connection.execute("ALTER TABLE shops ADD COLUMN active INTEGER NOT NULL DEFAULT 1")
+        if "uninstalled_at" not in columns:
+            connection.execute("ALTER TABLE shops ADD COLUMN uninstalled_at TEXT")
     return db_path
 
 

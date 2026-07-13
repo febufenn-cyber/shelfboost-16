@@ -9,6 +9,7 @@ from .db import initialize
 from .fixture import FixtureTransport
 from .shopify import DEFAULT_API_VERSION, ShopifyGraphQLClient
 from .sync import sync_catalog, sync_status
+from .webhooks import ingest_webhook, refresh_queued_products, webhook_status
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -35,6 +36,19 @@ def build_parser() -> argparse.ArgumentParser:
     fixture.add_argument("--page-size", type=int, default=50)
 
     sub.add_parser("status")
+
+    ingest = sub.add_parser("ingest-webhook")
+    ingest.add_argument("--headers-json", type=Path, required=True)
+    ingest.add_argument("--body", type=Path, required=True)
+    ingest.add_argument("--secret-env", default="SHOPIFY_CLIENT_SECRET")
+
+    refresh = sub.add_parser("refresh-queue")
+    refresh.add_argument("--shop", required=True)
+    refresh.add_argument("--token-env", default="SHOPIFY_ACCESS_TOKEN")
+    refresh.add_argument("--api-version", default=DEFAULT_API_VERSION)
+    refresh.add_argument("--limit", type=int, default=25)
+
+    sub.add_parser("webhook-status")
     return parser
 
 
@@ -45,6 +59,25 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.command == "status":
         print(json.dumps(sync_status(args.workspace), indent=2, ensure_ascii=False))
+        return 0
+    if args.command == "webhook-status":
+        print(json.dumps(webhook_status(args.workspace), indent=2, ensure_ascii=False))
+        return 0
+    if args.command == "ingest-webhook":
+        secret = os.environ.get(args.secret_env, "")
+        if not secret:
+            raise SystemExit(f"Environment variable {args.secret_env} is empty")
+        headers = json.loads(args.headers_json.read_text(encoding="utf-8"))
+        result = ingest_webhook(args.workspace, headers, args.body.read_bytes(), secret)
+        print(json.dumps(result, indent=2, ensure_ascii=False))
+        return 0
+    if args.command == "refresh-queue":
+        token = os.environ.get(args.token_env, "")
+        if not token:
+            raise SystemExit(f"Environment variable {args.token_env} is empty")
+        client = ShopifyGraphQLClient(args.shop, token, args.api_version)
+        result = refresh_queued_products(args.workspace, client, limit=args.limit)
+        print(json.dumps(result, indent=2, ensure_ascii=False))
         return 0
     if args.command == "sync":
         token = os.environ.get(args.token_env, "")
