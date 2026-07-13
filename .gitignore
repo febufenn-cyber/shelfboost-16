@@ -16,6 +16,7 @@ private-research/
 private-data/
 phase1-workspaces/
 phase2-workspaces/
+phase3-workspaces/
 *.db
 *.db-shm
 *.db-wal
