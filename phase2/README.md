@@ -79,3 +79,16 @@ PYTHONWARNINGS=error::ResourceWarning PYTHONPATH=phase2 \
 - Phase 1 fact-ledger bridge;
 - merchant UI;
 - direct Shopify writes.
+
+## Phase 2C — Phase 1 bridge
+
+The bridge exports the current read-only mirror into the exact CSV contract consumed by Phase 1:
+
+```bash
+PYTHONPATH=phase2 python3 -m shelfboost_phase2 \
+  --workspace /private/shelfboost/store-a \
+  export-phase1 --shop store-a.myshopify.com \
+  --output /private/shelfboost/store-a/exports/catalog.csv
+```
+
+It requires an active shop, a completed full baseline sync, complete variant data, and no pending, processing, or failed refresh work. Deleted products are excluded. Only allowlisted scalar `facts` metafields become `Metafield: facts.*` columns. The bridge writes a SHA-256 provenance manifest beside the CSV and does not write to Shopify.
