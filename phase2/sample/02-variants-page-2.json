@@ -1,0 +1,16 @@
+{
+  "status": 200,
+  "headers": {"X-Shopify-API-Version": "2026-07"},
+  "payload": {
+    "data": {
+      "product": {
+        "variants": {
+          "nodes": [
+            {"id": "gid://shopify/ProductVariant/1002", "legacyResourceId": "1002", "title": "M", "sku": "LS-M", "barcode": "", "price": "49.00", "selectedOptions": [{"name": "Size", "value": "M"}]}
+          ],
+          "pageInfo": {"hasNextPage": false, "endCursor": "variant-cursor-2"}
+        }
+      }
+    }
+  }
+}

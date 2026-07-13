@@ -1,6 +1,6 @@
-.PHONY: test phase0-test phase0-audit-sample phase1-test phase1-demo
+.PHONY: test phase0-test phase0-audit-sample phase1-test phase1-demo phase2-test phase2-demo
 
-test: phase0-test phase1-test
+test: phase0-test phase1-test phase2-test
 
 phase0-test:
 	python3 -m unittest discover -s prototypes/catalog-audit/tests -v
@@ -13,3 +13,9 @@ phase1-test:
 
 phase1-demo:
 	./phase1/run-demo.sh /tmp/shelfboost-phase1-demo
+
+phase2-test:
+	PYTHONPATH=phase2 python3 -m unittest discover -s phase2/tests -v
+
+phase2-demo:
+	./phase2/run-demo.sh /tmp/shelfboost-phase2-demo

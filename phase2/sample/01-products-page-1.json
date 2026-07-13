@@ -1,0 +1,40 @@
+{
+  "status": 200,
+  "headers": {"X-Shopify-API-Version": "2026-07"},
+  "payload": {
+    "data": {
+      "products": {
+        "nodes": [
+          {
+            "id": "gid://shopify/Product/101",
+            "legacyResourceId": "101",
+            "handle": "linen-shirt",
+            "title": "Linen Shirt",
+            "descriptionHtml": "<p>A relaxed linen shirt.</p>",
+            "vendor": "North Studio",
+            "productType": "Shirts",
+            "status": "ACTIVE",
+            "tags": ["linen", "summer"],
+            "createdAt": "2026-01-01T00:00:00Z",
+            "updatedAt": "2026-07-10T10:00:00Z",
+            "seo": {"title": "Linen Shirt", "description": "A relaxed linen shirt."},
+            "metafields": {
+              "nodes": [
+                {"namespace": "facts", "key": "material", "type": "single_line_text_field", "value": "Linen"},
+                {"namespace": "facts", "key": "fit", "type": "single_line_text_field", "value": "Relaxed"}
+              ],
+              "pageInfo": {"hasNextPage": false}
+            },
+            "variants": {
+              "nodes": [
+                {"id": "gid://shopify/ProductVariant/1001", "legacyResourceId": "1001", "title": "S", "sku": "LS-S", "barcode": "", "price": "49.00", "selectedOptions": [{"name": "Size", "value": "S"}]}
+              ],
+              "pageInfo": {"hasNextPage": true, "endCursor": "variant-cursor-1"}
+            }
+          }
+        ],
+        "pageInfo": {"hasNextPage": true, "endCursor": "product-cursor-1"}
+      }
+    }
+  }
+}
