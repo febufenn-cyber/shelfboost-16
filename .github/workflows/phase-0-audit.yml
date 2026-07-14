@@ -1,4 +1,4 @@
-name: phase-0-1-2-3-4
+name: phase-0-1-2-3-4-5
 
 on:
   pull_request:
@@ -14,6 +14,7 @@ on:
       - agent/phase-3b-safe-execution
       - agent/phase-3c-rollback-audit
       - agent/phase-4-production-foundation
+      - agent/phase-5-merchant-experience
 
 permissions:
   contents: read
@@ -56,3 +57,5 @@ jobs:
         run: PYTHONWARNINGS=error::ResourceWarning PYTHONPATH=phase1:phase2:phase3 python -m unittest discover -s phase3/tests -v
       - name: Phase 4 unit tests
         run: PYTHONWARNINGS=error::ResourceWarning PYTHONPATH=phase4 python -m unittest discover -s phase4/tests -v
+      - name: Phase 5 unit tests
+        run: PYTHONWARNINGS=error::ResourceWarning PYTHONPATH=phase4:phase5 python -m unittest discover -s phase5/tests -v
