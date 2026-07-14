@@ -71,11 +71,28 @@ CREATE TABLE IF NOT EXISTS publish_attempts (
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS rollback_runs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    batch_id INTEGER NOT NULL REFERENCES publish_batches(id) ON DELETE CASCADE,
+    idempotency_key TEXT NOT NULL UNIQUE,
+    status TEXT NOT NULL CHECK(status IN ('planned','running','partial','completed','failed')),
+    plan_json TEXT NOT NULL,
+    audit_path TEXT NOT NULL DEFAULT '',
+    audit_manifest_sha256 TEXT NOT NULL DEFAULT '',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    started_at TEXT,
+    completed_at TEXT,
+    error_text TEXT NOT NULL DEFAULT ''
+);
+
 CREATE INDEX IF NOT EXISTS idx_publish_batches_shop_status
 ON publish_batches(shop_id, status, id);
 
 CREATE INDEX IF NOT EXISTS idx_publish_items_batch_status
 ON publish_items(batch_id, status, id);
+
+CREATE INDEX IF NOT EXISTS idx_rollback_runs_batch_status
+ON rollback_runs(batch_id, status, id);
 """
 
 
