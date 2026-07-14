@@ -19,11 +19,24 @@
 - verified successes update the local mirror;
 - partial batches remain item-addressable.
 
+## Remaining: 3C rollback and audit closure
+
+Phase 3C must:
+
+- plan rollback only for verified published items;
+- read the live product immediately before restoration;
+- restore only fields that still equal Shelfboost's published value;
+- refuse to overwrite a later merchant or app edit;
+- reconcile ambiguous mutation outcomes before another attempt;
+- verify restoration before updating the mirror;
+- emit a complete SHA-256-indexed audit bundle without secrets.
+
+The detailed implementation, tests, exit gate, autonomous build behavior, Git workflow, and remaining Phases 4–9 are defined in [`../REMAINING_IMPLEMENTATION_PLAN.md`](../REMAINING_IMPLEMENTATION_PLAN.md).
+
 ## Still prohibited
 
 - autonomous approval;
 - variants, prices, inventory, tags, product status, media, or metafield writes;
 - force-overwriting an external edit;
-- rollback without a live precondition check.
-
-Phase 3C adds rollback and a final audit bundle.
+- rollback without a live precondition check;
+- claiming Phase 3 complete before 3C is merged and verified.
