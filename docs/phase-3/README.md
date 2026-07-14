@@ -1,42 +1,58 @@
 # Phase 3 — Reversible selected-field publishing
 
-## Implemented
+## Complete implementation
 
-### 3A: planning
+### 3A — Publish planning
 
-- Phase 1 approval, approved CSV, Phase 2 mirror, and bridge provenance must agree;
-- any stale product blocks the batch;
-- immutable planned-before snapshots and deterministic plan keys are recorded.
+- Phase 1 approval, approved CSV, Phase 2 mirror, and bridge provenance must agree.
+- Any stale product blocks the batch.
+- Immutable planned-before snapshots and deterministic plan keys are recorded.
 
-### 3B: execution
+### 3B — Live-preconditioned execution
 
-- a live product read precedes every write;
-- unchanged, already-applied, and externally modified states are distinguished;
-- `productUpdate` receives only the selected description or SEO fields;
-- mutations are sent once, never blindly retried;
-- ambiguous outcomes become `uncertain` and are reconciled by a later live read;
-- Shopify `userErrors`, raw requests, responses, hashes, and snapshots are retained;
-- verified successes update the local mirror;
-- partial batches remain item-addressable.
+- A live product read precedes every write.
+- Unchanged, already-applied, and externally modified states are distinguished.
+- `productUpdate` receives only approved description or SEO fields.
+- Mutations are sent once and never blindly retried.
+- Ambiguous outcomes become `uncertain` and are reconciled by a later live read.
+- Shopify `userErrors`, requests, responses, hashes, and snapshots are retained.
+- Verified successes update the local mirror.
 
-## Remaining: 3C rollback and audit closure
+### 3C — Conflict-safe rollback and audit closure
 
-Phase 3C must:
+- Only items with evidence that Shelfboost actually published are rollback-eligible.
+- A deterministic rollback plan binds the source batch and immutable before/after snapshots.
+- Every rollback reads the live product first.
+- Changed fields must still equal Shelfboost's published values.
+- Later merchant or app edits become `rollback_conflict`.
+- Already-restored products reconcile without mutation.
+- Ambiguous rollback outcomes require another live read before a later attempt.
+- The mirror changes only after verified restoration.
+- A tamper-evident audit directory records source digests, items, snapshots, attempts, rollback runs, and a SHA-256 manifest.
+- Secret-like keys are redacted from exported audit artifacts.
 
-- plan rollback only for verified published items;
-- read the live product immediately before restoration;
-- restore only fields that still equal Shelfboost's published value;
-- refuse to overwrite a later merchant or app edit;
-- reconcile ambiguous mutation outcomes before another attempt;
-- verify restoration before updating the mirror;
-- emit a complete SHA-256-indexed audit bundle without secrets.
+## Commands
 
-The detailed implementation, tests, exit gate, autonomous build behavior, Git workflow, and remaining Phases 4–9 are defined in [`../REMAINING_IMPLEMENTATION_PLAN.md`](../REMAINING_IMPLEMENTATION_PLAN.md).
+```bash
+PYTHONPATH=phase2:phase3 python3 -m shelfboost_phase3 --workspace /private/store plan-rollback \
+  --batch-id 1
 
-## Still prohibited
+export SHOPIFY_ACCESS_TOKEN='...'
+PYTHONPATH=phase2:phase3 python3 -m shelfboost_phase3 --workspace /private/store rollback \
+  --shop store.myshopify.com --rollback-run-id 1
+
+PYTHONPATH=phase2:phase3 python3 -m shelfboost_phase3 --workspace /private/store audit-bundle \
+  --batch-id 1
+```
+
+## Trust boundary
+
+Still prohibited:
 
 - autonomous approval;
 - variants, prices, inventory, tags, product status, media, or metafield writes;
 - force-overwriting an external edit;
-- rollback without a live precondition check;
-- claiming Phase 3 complete before 3C is merged and verified.
+- performance-triggered automatic rollback;
+- claiming live-store verification when only fixtures were used.
+
+Phase 3 is complete under fixture-backed tests. A controlled development-store exercise remains required before production use.
