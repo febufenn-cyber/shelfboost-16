@@ -1,6 +1,6 @@
-.PHONY: test phase0-test phase0-audit-sample phase1-test phase1-demo phase2-test phase2-demo phase3-test phase4-test phase5-test phase6-test phase7-test phase8-test
+.PHONY: test phase0-test phase0-audit-sample phase1-test phase1-demo phase2-test phase2-demo phase3-test phase4-test phase5-test phase6-test phase7-test phase8-test phase9-test
 
-test: phase0-test phase1-test phase2-test phase3-test phase4-test phase5-test phase6-test phase7-test phase8-test
+test: phase0-test phase1-test phase2-test phase3-test phase4-test phase5-test phase6-test phase7-test phase8-test phase9-test
 
 phase0-test:
 	python3 -m unittest discover -s prototypes/catalog-audit/tests -v
@@ -37,3 +37,6 @@ phase7-test:
 
 phase8-test:
 	PYTHONPATH=phase4:phase8 python3 -m unittest discover -s phase8/tests -v
+
+phase9-test:
+	PYTHONPATH=phase4:phase9 python3 -m unittest discover -s phase9/tests -v
