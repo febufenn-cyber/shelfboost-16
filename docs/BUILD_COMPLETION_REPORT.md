@@ -4,17 +4,19 @@
 
 This report covers the roadmap-triggered autonomous build from Phase 3C through Phase 9. The software foundation is fixture-backed and regression-tested. Public production readiness remains controlled by external evidence gates.
 
-## Merged packages
+## Completed and merged packages
 
-| Package | Merge SHA | Result |
-|---|---|---|
-| Phase 3C — rollback and audit closure | `c70341aed281727b356be80de964edf41104fb3d` | Merged, full Phase 0–3 CI passed |
-| Phase 4 — production application foundation | `af46ed4ce42abaa7a1ea2fc7df90b9ac2bbfeeb0` | Merged, full Phase 0–4 CI passed |
-| Phase 5 — merchant experience | `384b7a08820b865946150129bb94b20faad7cc6d` | Merged, full Phase 0–5 CI passed |
-| Phase 6 — governed AI | `039aac56fb63b9003828f34abfbb1302afe77d31` | Merged, full Phase 0–6 CI passed |
-| Phase 7 — commercial and compliance | `38c6a9c9ad767fdee0f7fa0d3d37f0f61fdc900c` | Merged, full Phase 0–7 CI passed |
-| Phase 8 — measurement and recurring optimization | `4a219ee82aad548547ff377cb5b6e8528e14f668` | Merged, full Phase 0–8 CI passed |
-| Phase 9 — hardening and controlled launch | Pending this pull request | Must pass full Phase 0–9 CI before merge |
+| Package | PR | Merge SHA | Validation |
+|---|---:|---|---|
+| Phase 3C — rollback and audit closure | #9 | `c70341aed281727b356be80de964edf41104fb3d` | Full Phase 0–3 CI passed after an audit-redaction defect was found and fixed |
+| Phase 4 — production application foundation | #10 | `af46ed4ce42abaa7a1ea2fc7df90b9ac2bbfeeb0` | Full Phase 0–4 CI passed |
+| Phase 5 — merchant experience | #11 | `384b7a08820b865946150129bb94b20faad7cc6d` | Full Phase 0–5 CI passed |
+| Phase 6 — governed AI | #12 | `039aac56fb63b9003828f34abfbb1302afe77d31` | Full Phase 0–6 CI passed |
+| Phase 7 — commercial and compliance | #13 | `38c6a9c9ad767fdee0f7fa0d3d37f0f61fdc900c` | Full Phase 0–7 CI passed |
+| Phase 8 — measurement and recurring optimization | #14 | `4a219ee82aad548547ff377cb5b6e8528e14f668` | Full Phase 0–8 CI passed |
+| Phase 9 — hardening and controlled launch | #15 | `89e335f02995b99a387e40dcf21675c35a7ca285` | Full Phase 0–9 CI and both synthetic demos passed |
+
+Phase 9's merge commit is the code-foundation completion point. This documentation record is merged separately so repository history retains an explicit final confirmation boundary.
 
 ## Code-complete capabilities
 
@@ -30,6 +32,18 @@ This report covers the roadmap-triggered autonomous build from Phase 3C through 
 - source-attributed outcome measurement and controlled estimates;
 - recurring optimization queues without automatic writes;
 - secret scanning, redaction, rate limits, circuit breakers, SLOs, backups, incidents, feature flags and launch gates.
+
+## CI evidence from the autonomous run
+
+- Phase 3C final CI run: `29310296296`
+- Phase 4 CI run: `29310517915`
+- Phase 5 CI run: `29310717049`
+- Phase 6 CI run: `29310942260`
+- Phase 7 CI run: `29311145070`
+- Phase 8 CI run: `29311372202`
+- Phase 9 CI run: `29311654753`
+
+Every listed run completed successfully before its corresponding normal merge commit.
 
 ## External verification still required
 
@@ -50,4 +64,4 @@ The following are not available inside repository CI and remain mandatory before
 
 ## Honest completion statement
 
-The repository can truthfully be described as a **Phase 0–9 code-complete, fixture-tested product foundation** after the Phase 9 pull request passes and merges. It must not be described as a publicly deployed, externally verified or Shopify-approved production service until the launch gates above are passed with evidence.
+The repository is a **Phase 0–9 code-complete, fixture-tested product foundation**. It is not yet a publicly deployed, externally verified or Shopify-approved production service. Production launch remains fail-closed until the required launch gates are passed with evidence.
