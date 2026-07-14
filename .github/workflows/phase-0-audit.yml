@@ -1,4 +1,4 @@
-name: phase-0-1-2-3
+name: phase-0-1-2-3-4
 
 on:
   pull_request:
@@ -13,6 +13,7 @@ on:
       - agent/phase-3a-publish-planning
       - agent/phase-3b-safe-execution
       - agent/phase-3c-rollback-audit
+      - agent/phase-4-production-foundation
 
 permissions:
   contents: read
@@ -53,3 +54,5 @@ jobs:
           test -s /tmp/shelfboost-phase2-demo/exports/phase1-catalog.manifest.json
       - name: Phase 3 unit tests
         run: PYTHONWARNINGS=error::ResourceWarning PYTHONPATH=phase1:phase2:phase3 python -m unittest discover -s phase3/tests -v
+      - name: Phase 4 unit tests
+        run: PYTHONWARNINGS=error::ResourceWarning PYTHONPATH=phase4 python -m unittest discover -s phase4/tests -v
