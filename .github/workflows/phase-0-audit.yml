@@ -1,9 +1,9 @@
-name: shelfboost-phases-0-8
+name: shelfboost-phases-0-9
 
 on:
   pull_request:
   push:
-    branches: [main, agent/phase-8-measurement-retention]
+    branches: [main, agent/phase-9-launch-hardening, agent/build-completion-record]
 
 permissions:
   contents: read
@@ -42,3 +42,5 @@ jobs:
         run: PYTHONWARNINGS=error::ResourceWarning PYTHONPATH=phase4:phase7 python -m unittest discover -s phase7/tests -v
       - name: Phase 8 tests
         run: PYTHONWARNINGS=error::ResourceWarning PYTHONPATH=phase4:phase8 python -m unittest discover -s phase8/tests -v
+      - name: Phase 9 tests
+        run: PYTHONWARNINGS=error::ResourceWarning PYTHONPATH=phase4:phase9 python -m unittest discover -s phase9/tests -v
