@@ -1,69 +1,64 @@
 # Shelfboost
 
-> Find weak Shopify listings, prepare fact-traceable improvements, publish only fields a human explicitly approves, and preserve a conflict-safe path back.
+> Find weak Shopify listings, prepare fact-traceable improvements, require human approval, publish selected fields with live conflict checks, and preserve a verified path back.
 
-Shelfboost is being built in evidence-gated phases. The repository now contains a discovery system, a local human-reviewed pilot workflow, read-only Shopify synchronization and reconciliation, publish planning, and live-preconditioned selected-field execution. Phase 3 rollback is still pending, and the production application phases remain planned rather than complete.
+Shelfboost has completed the **Phase 0–9 fixture-backed software foundation**. The repository contains the complete trust loop from discovery and catalog diagnosis through governed AI, human review, reversible publishing, commercial controls, measurement, recovery, and controlled-launch gates.
 
-## Current status
+**Code-complete is not the same as publicly production-ready.** Live deployment, Shopify installation, managed key storage, real AI/billing/analytics providers, restore drills, capacity tests, security review, legal artifacts, and Shopify approval remain external launch gates.
 
-| Phase | Status | Purpose |
+## Phase status
+
+| Phase | Repository status | Outcome |
 |---|---|---|
-| Phase 0 | Implemented foundation; real evidence still required | Prove buyer pain, trust requirements, recurring use, and willingness to pay |
-| Phase 1 | Implemented local pilot system | Prove fact governance, drafting, validation, review, approved-only export, and paid continuation |
-| Phase 2 | Implemented read-only connection foundation | Mirror Shopify safely, reconcile changes, and feed synchronized data into Phase 1 |
-| Phase 3 | **3A planning and 3B execution implemented; 3C rollback pending** | Publish selected approved fields with live conflict checks, then restore them safely |
-| Phases 4–9 | Planned | Production tenancy, merchant UI, AI, billing/compliance, measurement, and launch hardening |
+| 0 | Implemented | Evidence system, hypotheses, audits, pricing and kill gates |
+| 1 | Implemented | Human-reviewed fact-safe catalog pilot workflow |
+| 2 | Implemented | Read-only Shopify mirror, webhooks and Phase 1 bridge |
+| 3 | Implemented | Conflict-safe selected-field publish, rollback and audit bundle |
+| 4 | Implemented contracts | Tenant identity, installation state, encrypted-token interface, durable jobs and privacy lifecycle |
+| 5 | Implemented contracts | Merchant onboarding, dashboard, brand/fact governance, review, approvals and activity history |
+| 6 | Implemented contracts | Governed AI routing, budgets, validation, evaluations and confirmed feedback rules |
+| 7 | Implemented contracts | Billing integrity, entitlements, usage metering, privacy/compliance and review readiness |
+| 8 | Implemented contracts | Source-attributed measurement, controlled experiments and recurring review cycles |
+| 9 | Implemented contracts | Security, resilience, backups, incidents, kill switches and launch gates |
 
-There are **seven remaining build packages**: Phase 3C plus Phases 4–9. The authoritative implementation and autonomous merge contract is in [`docs/REMAINING_IMPLEMENTATION_PLAN.md`](docs/REMAINING_IMPLEMENTATION_PLAN.md).
+“Implemented contracts” means behavior is covered by deterministic repository tests. It does not claim that unavailable external services were deployed or approved.
 
-## End-to-end workflow
+## End-to-end trust loop
 
 ```text
-Shopify Admin GraphQL synchronization
-→ immutable snapshots and normalized mirror
+Shopify installation and tenant context
+→ read-only catalog synchronization
 → authenticated webhook reconciliation
-→ freshness and completeness gates
-→ Phase 1-compatible bridge artifact
-→ governed product-fact ledger
-→ catalog audit and priority batch
-→ controlled drafts and validation
-→ human field-level decisions
+→ catalog audit and priority queues
+→ governed facts and brand profile
+→ evaluated AI drafts
+→ field-level human review
+→ entitlement and usage checks
 → immutable publish plan
-→ live precondition read
-→ selected-field productUpdate attempt
-→ uncertain-outcome reconciliation
-→ conflict-safe rollback (Phase 3C pending)
+→ live conflict read
+→ selected-field mutation
+→ verification and history
+→ conflict-safe rollback
+→ source-attributed measurement
+→ recurring review cycle
+→ controlled rollout, SLOs, incidents and recovery
 ```
 
-## Implemented write boundary
+## Hard safety boundaries
 
-Phase 3B contains an explicit Shopify `productUpdate` execution path, but it is intentionally narrow:
+- No autonomous approval or direct model-to-publish path.
+- No force overwrite after a merchant or another app edits a field.
+- Only approved product description and SEO fields enter the Phase 3 write path.
+- Ambiguous mutations are reconciled by a live read before another attempt.
+- Billing access cannot be granted by unsigned events.
+- Cancellation never removes read, export or privacy access.
+- Before/after metrics remain observational; experiment estimates require declared controls and sample gates.
+- Feature kill switches override rollout immediately.
+- Backup existence is insufficient; restore verification is required.
+- Public launch is blocked until every required external gate has evidence.
+- No real merchant data or credentials belong in this public repository.
 
-- only `Body (HTML)`, SEO title, and SEO description;
-- only fields approved through the Phase 1 evidence chain;
-- a live product read immediately before every write;
-- no blind mutation retry;
-- already-applied proposals are reconciled without writing;
-- later merchant or app edits become conflicts;
-- transport ambiguity becomes `uncertain` and requires a later live read;
-- no autonomous approval or force-overwrite path.
-
-Rollback remains disabled until Phase 3C is implemented.
-
-## Phase 2 capabilities
-
-- API version pinning and response-version verification;
-- cursor pagination for products and variants;
-- bounded retry for read-side rate limits and transient server failures;
-- immutable raw response snapshots with SHA-256 digests;
-- full-sync deletion reconciliation and safe incremental refresh;
-- raw-body webhook HMAC verification;
-- delivery deduplication and product refresh coalescing;
-- product deletion and app-uninstall handling;
-- Phase 1-compatible CSV export with provenance manifest;
-- freshness, active-shop, full-baseline, variant-completeness, and fact-type gates.
-
-## Run validation
+## Validate the complete foundation
 
 ```bash
 make test
@@ -71,33 +66,28 @@ make phase1-demo
 make phase2-demo
 ```
 
-The synthetic demos use fixtures. They do not publish to a live merchant store.
+The demos and CI use synthetic fixtures. They do not connect to or modify a live merchant store.
 
-## Trust boundary
+## Production launch gates still required
 
-- no autonomous approval;
-- no variant, price, inventory, tag, status, media, or metafield writes;
-- no force overwrite of an external edit;
-- access-token values are not stored in SQLite;
-- invalid webhook HMACs are rejected before persistence;
-- incremental absence is not interpreted as deletion;
-- unresolved refresh work blocks bridging and publishing;
-- deleted products are excluded;
-- only allowlisted scalar `facts` metafields enter approved-fact columns;
-- no ranking, traffic, conversion, or revenue guarantees;
-- no real merchant data in this public repository.
+- Deployed Shopify installation/token flow on a development store
+- Managed KMS token encryption and rotation
+- Deployed webhook retry/dead-letter exercise
+- Real AI provider evaluation, latency, cost and data-processing decision
+- Billing sandbox lifecycle and signed webhooks
+- Analytics connector validation
+- Managed backup and restore drill
+- Capacity/load test
+- Dependency/runtime vulnerability scanning
+- Appropriate independent security review
+- Privacy policy, terms, support and incident contacts
+- Shopify app review and approval
 
 ## Documentation
 
 - [`docs/REMAINING_IMPLEMENTATION_PLAN.md`](docs/REMAINING_IMPLEMENTATION_PLAN.md)
-- [`docs/phase-0/00-phase-0-charter.md`](docs/phase-0/00-phase-0-charter.md)
-- [`docs/phase-1/README.md`](docs/phase-1/README.md)
-- [`docs/phase-2/README.md`](docs/phase-2/README.md)
+- [`docs/BUILD_COMPLETION_REPORT.md`](docs/BUILD_COMPLETION_REPORT.md)
 - [`docs/phase-3/README.md`](docs/phase-3/README.md)
-- [`phase1/README.md`](phase1/README.md)
-- [`phase2/README.md`](phase2/README.md)
-- [`phase3/README.md`](phase3/README.md)
-
-## Long-term direction
-
-The intended mature product is a Shopify catalog-optimization system with read-only diagnosis, controlled generation, human approval, reversible publishing, and measured outcomes. Cloudflare Workers, Hono, Supabase, encrypted token storage, AI model adapters, and a billing provider remain candidate production components—not commitments that override merchant evidence, current platform rules, or safety gates.
+- [`docs/phase-4/ADR-001-production-boundary.md`](docs/phase-4/ADR-001-production-boundary.md)
+- [`docs/phase-9/OPERATIONS_RUNBOOK.md`](docs/phase-9/OPERATIONS_RUNBOOK.md)
+- Phase package READMEs under `phase1/` through `phase9/`
