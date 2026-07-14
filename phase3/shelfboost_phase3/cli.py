@@ -7,10 +7,11 @@ from pathlib import Path
 
 from shelfboost_phase2.shopify import DEFAULT_API_VERSION, ShopifyGraphQLClient
 
+from .audit import build_audit_bundle
 from .db import initialize
 from .execution import execute_publish
 from .planning import plan_publish, publish_status
-from .rollback import build_audit_bundle, execute_rollback, plan_rollback
+from .rollback import execute_rollback, plan_rollback
 from .writer import SafeShopifyProductWriter
 
 
